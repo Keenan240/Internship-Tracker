@@ -45,16 +45,23 @@ export default function Home() {
   const [form, setForm] = useState({ title: "", company: "", location: "", link: "" });
   const [editTarget, setEditTarget] = useState<JobPosting | null>(null);
 
+  const resetForm = () => {
+    setForm({ title: "", company: "", location: "", link: "" });
+    setEditTarget(null);
+    setShowModal(false);
+  };
+
   const toggleExpand = (label: string) => {
     setExpanded(expanded === label ? null : label);
   };
 
-  const handleAddJob = async () => {
-    if (!form.title || !form.company || !form.location) {
-      alert("All fields are required!");
-      return;
-    }
+const handleAddJob = async () => {
+  if (!form.title || !form.company || !form.location) {
+    alert("All fields are required!");
+    return;
+  }
 
+  try {
     const { data, error } = await supabase
       .from("Applications")
       .insert([
@@ -70,30 +77,41 @@ export default function Home() {
       .single();
 
     if (error) {
-      console.error("Supabase insert error:", error.message);
+      console.error("Supabase insert error:", {
+        message: error.message,
+        details: error.details,
+        code: error.code,
+      });
       alert(`Failed to add job: ${error.message}`);
       return;
     }
 
-    setPostings((prev) => [data, ...prev]);
-    resetForm();
-  };
-
-  const handleUpdateJob = async () => {
-    if (!form.title || !form.company || !form.location || !editTarget) {
-      alert("All fields are required!");
-      return;
+    if (data) {
+      setPostings((prev) => [data, ...prev]);
+      resetForm();
     }
+  } catch (err) {
+    console.error("Unexpected error in handleAddJob:", err);
+    alert("Something went wrong while adding your job.");
+  }
+};
 
+const handleUpdateJob = async () => {
+  if (!form.title || !form.company || !form.location || !editTarget) {
+    alert("All fields are required!");
+    return;
+  }
+
+  try {
     const { data, error } = await supabase
-      .from('Applications')
+      .from("Applications")
       .update({
         title: form.title,
         company: form.company,
         location: form.location,
         status: editTarget.status,
       })
-      .eq('id', editTarget.id)
+      .eq("id", editTarget.id)
       .select()
       .single();
 
@@ -103,64 +121,87 @@ export default function Home() {
       return;
     }
 
-    setPostings(postings.map((p) => (p.id === editTarget.id ? data : p)));
-    resetForm();
-  };
+    if (data) {
+      setPostings((prev) => prev.map((p) => (p.id === data.id ? data : p)));
+      resetForm();
+    }
+  } catch (err) {
+    console.error("Unexpected error in handleUpdateJob:", err);
+    alert("Something went wrong while updating the job.");
+  }
+};
 
+const handleDeleteJob = async () => {
+  if (!editTarget) return;
 
-  const handleDeleteJob = async () => {
-    if (!editTarget) return;
-
+  try {
     const { error } = await supabase
-      .from('Applications')
+      .from("Applications")
       .delete()
-      .eq('id', editTarget.id);
+      .eq("id", editTarget.id);
 
     if (error) {
-      console.error("Delete failed:", error);
+      console.error("Delete failed:", error.message);
       alert("Failed to delete job.");
       return;
     }
 
-    setPostings(postings.filter((p) => p.id !== editTarget.id));
+    setPostings((prev) => prev.filter((p) => p.id !== editTarget.id));
     resetForm();
-  };
+  } catch (err) {
+    console.error("Unexpected error in handleDeleteJob:", err);
+    alert("Something went wrong while deleting the job.");
+  }
+};
 
+const updateStatus = async (id: string, newStatus: string) => {
+  const updated = postings.find((p) => p.id === id);
+  if (!updated) return;
 
-  const resetForm = () => {
-    setForm({ title: "", company: "", location: "", link: "" });
-    setEditTarget(null);
-    setShowModal(false);
-    setExpanded("Applied");
-  };
+  const { error } = await supabase
+    .from("Applications")
+    .update({ status: newStatus })
+    .eq("id", id);
 
-  const updateStatus = (id: number, newStatus: string) => {
-    setPostings(postings.map((p) => (p.id === id ? { ...p, status: newStatus } : p)));
-  };
+  if (error) {
+    console.error("Status update failed:", error.message);
+    alert("Failed to update status.");
+    return;
+  }
 
-  const fetchJobDetails = async () => {
-    if (!form.link) return;
-    try {
-      const res = await fetch("/api/scrape", {
-        method: "POST",
-        headers: { "Content-Type": "Application/json" },
-        body: JSON.stringify({ url: form.link }),
-      });
-      const data = await res.json();
-      setForm((prev) => ({
-        ...prev,
-        title: data.title || "",
-        company: data.company || "",
-        location: data.location || "N/A",
-      }));
-      setTimeout(() => {
-        const firstInput = document.querySelector<HTMLInputElement>('input[placeholder="Job Title"]');
-        firstInput?.focus();
-      }, 50);
-    } catch (error) {
-      alert("Failed to fetch job info.");
-    }
-  };
+  setPostings((prev) =>
+    prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p))
+  );
+};
+
+const fetchJobDetails = async () => {
+  if (!form.link) return;
+
+  try {
+    const res = await fetch("/api/scrape", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: form.link }),
+    });
+
+    const data = await res.json();
+    setForm((prev) => ({
+      ...prev,
+      title: data.title || "",
+      company: data.company || "",
+      location: data.location || "N/A",
+    }));
+
+    setTimeout(() => {
+      const firstInput = document.querySelector<HTMLInputElement>('input[placeholder="Job Title"]');
+      firstInput?.focus();
+    }, 50);
+  } catch (err) {
+    console.error("Scrape fetch error:", err);
+    alert("Failed to fetch job info.");
+  }
+};
+
 
   return (
     <div className="text-black min-h-screen flex flex-col items-center p-6 bg-white">
