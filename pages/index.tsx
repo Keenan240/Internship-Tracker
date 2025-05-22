@@ -37,7 +37,7 @@ export default function Home() {
   };
 
   fetchJobs();
-}, [session]);
+}, [session, supabase]);
 
   const [expanded, setExpanded] = useState<string | null>("Applied");
   const [showModal, setShowModal] = useState(false);
@@ -49,36 +49,40 @@ export default function Home() {
     setExpanded(expanded === label ? null : label);
   };
 
-const handleAddJob = async () => {
-  if (!form.title || !form.company || !form.location) {
-    alert("All fields are required!");
-    return;
-  }
+  const handleAddJob = async () => {
+    if (!form.title || !form.company || !form.location) {
+      alert("All fields are required!");
+      return;
+    }
 
-  const { data, error } = await supabase
-    .from('Applications')
-    .insert([
-      {
-        title: form.title,
-        company: form.company,
-        location: form.location,
-        status: "Applied",
-        user_id: session?.user.id,
-      }
-    ])
-    .select()
-    .single();
+    const { data, error } = await supabase
+      .from("Applications")
+      .insert([
+        {
+          title: form.title,
+          company: form.company,
+          location: form.location,
+          status: "Applied",
+          user_id: session?.user.id,
+        },
+      ])
+      .select()
+      .single();
 
-  if (error) {
-    console.error("Supabase insert error:", error); // log full error object
-    alert(`Failed to add job: ${error.message}`);
-    return;
-  }
+    if (error) {
+      console.error("Supabase insert error:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+      alert(`Failed to add job: ${error.message}`);
+      return;
+    }
 
-  setPostings((prev) => [data, ...prev]);
-  resetForm();
-};
-
+    setPostings((prev) => [data, ...prev]);
+    resetForm();
+  };
 
   const handleUpdateJob = async () => {
     if (!form.title || !form.company || !form.location || !editTarget) {
@@ -298,7 +302,11 @@ const handleAddJob = async () => {
                   return;
                 }
 
-                editTarget ? handleUpdateJob() : handleAddJob();
+                if (editTarget) {
+                  handleUpdateJob();
+                } else {
+                  handleAddJob();
+                }
               }}
               className="grid gap-4"
             >

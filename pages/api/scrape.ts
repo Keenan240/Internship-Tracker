@@ -37,6 +37,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const location = getLocation();
 
     return res.status(200).json({ title, company, location });
+
+  // ✅ Fix below
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     console.error("Scrape failed:", err);
     return res.status(500).json({ error: "Failed to parse job posting." });
