@@ -70,12 +70,7 @@ export default function Home() {
       .single();
 
     if (error) {
-      console.error("Supabase insert error:", {
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code,
-      });
+      console.error("Supabase insert error:", error.message);
       alert(`Failed to add job: ${error.message}`);
       return;
     }
