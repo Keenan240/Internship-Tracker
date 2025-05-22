@@ -98,7 +98,8 @@ export default function Home() {
       .single();
 
     if (error) {
-      console.error("Update failed:", error);
+      console.error("Update failed:", error.message);
+      alert("Failed to update job.");
       return;
     }
 
@@ -117,6 +118,7 @@ export default function Home() {
 
     if (error) {
       console.error("Delete failed:", error);
+      alert("Failed to delete job.");
       return;
     }
 
