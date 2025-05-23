@@ -228,19 +228,19 @@ const fetchJobDetails = async () => {
       </div>
 
 
-      <h1 className="text-[48px] font-bold mb-6">Internship Tracker</h1>
+      <h1 className="text-6xl font-bold mb-6 text-center">Internship Tracker</h1>
       <Motivate />
 
       <div className="w-full max-w-4xl border rounded-lg">
         <div className="flex justify-between items-center border-b px-6 py-4">
-          <span className="text-[24px] font-bold">Applications</span>
+          <span className="text-2xl font-bold">Applications</span>
           <button
             onClick={() => {
               setForm({ title: "", company: "", location: "", link: "" });
               setEditTarget(null);
               setShowModal(true);
             }}
-            className="bg-black text-[20px] text-white px-8 py-1 rounded hover:bg-gray-600 transition-colors"
+            className="bg-black text-2xl text-white px-8 py-1 rounded hover:bg-gray-600 transition-colors"
           >
             +
           </button>
@@ -254,7 +254,7 @@ const fetchJobDetails = async () => {
                 onClick={() => toggleExpand(label)}
                 className="flex justify-between items-center w-full px-6 py-4 border-b hover:bg-gray-100 transition-colors"
               >
-                <span className="text-[24px]">{label}</span>
+                <span className="text-xl">{label}</span>
                 <span className="text-sm border px-3 py-1 rounded bg-white">{jobs.length}</span>
               </button>
 
@@ -360,7 +360,7 @@ const fetchJobDetails = async () => {
                   <button
                     type="button"
                     onClick={fetchJobDetails}
-                    className="text-sm bg-black text-white border border-black rounded px-4 py-2 w-64 hover:bg-opacity-60 transition-opacity duration-200 mx-auto text-center cursor-pointer"
+                    className="text-sm bg-black text-white border border-black rounded px-4 py-2 w-48 hover:bg-opacity-60 transition-opacity duration-200 mx-auto text-center cursor-pointer"
                   >
                     Fetch Job Info
                   </button>
