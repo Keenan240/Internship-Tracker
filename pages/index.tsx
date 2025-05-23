@@ -9,6 +9,7 @@ type JobPosting = {
   company: string;
   location: string;
   status: string;
+  deadline?: string;
   user_id?: string; // Optional, Supabase handles this on insert
 };
 
@@ -42,11 +43,11 @@ export default function Home() {
   const [expanded, setExpanded] = useState<string | null>("Saved");
   const [showModal, setShowModal] = useState(false);
   const [postings, setPostings] = useState<JobPosting[]>([]);
-  const [form, setForm] = useState({ title: "", company: "", location: "", link: "" });
+  const [form, setForm] = useState({ title: "", company: "", location: "", link: "", deadline: "", });
   const [editTarget, setEditTarget] = useState<JobPosting | null>(null);
 
   const resetForm = () => {
-    setForm({ title: "", company: "", location: "", link: "" });
+    setForm({ title: "", company: "", location: "", link: "", deadline: "", });
     setEditTarget(null);
     setShowModal(false);
   };
@@ -71,6 +72,7 @@ const handleAddJob = async () => {
           location: form.location,
           status: "Saved",
           user_id: session?.user.id,
+          deadline: form.deadline,
         },
       ])
       .select()
@@ -110,6 +112,7 @@ const handleUpdateJob = async () => {
         company: form.company,
         location: form.location,
         status: editTarget.status,
+        deadline: form.deadline,
       })
       .eq("id", editTarget.id)
       .select()
@@ -228,6 +231,7 @@ const fetchJobDetails = async () => {
       </div>
 
       <h1 className="text-6xl font-bold mb-6 text-center">Internship Tracker</h1>
+
       <Motivate />
 
       <div className="w-full max-w-4xl border rounded-lg">
@@ -235,7 +239,7 @@ const fetchJobDetails = async () => {
           <span className="text-2xl font-bold">Applications</span>
           <button
             onClick={() => {
-              setForm({ title: "", company: "", location: "", link: "" });
+              setForm({ title: "", company: "", location: "", link: "", deadline: "", });
               setEditTarget(null);
               setShowModal(true);
             }}
@@ -261,7 +265,7 @@ const fetchJobDetails = async () => {
                 <div className="px-6 py-4 bg-gray-50 space-y-4">
                   {jobs.length === 0 ? (
                     <div className="text-gray-500 text-sm italic">
-                      {label === "Saved" && "Bro where are your applications???"}
+                      {label === "Saved" && "so dead in here..."}
                       {label === "Applied" && "Bro where are your applications???"}
                       {label === "Rejected" && "I'll buy you a bagel if you get >400"}
                       {label === "Interview" && "don't give up!!"}
@@ -278,7 +282,7 @@ const fetchJobDetails = async () => {
                           className="flex gap-6 pointer-events-auto w-full"
                           onClick={() => {
                             setEditTarget(job);
-                            setForm({ ...job, link: "" });
+                            setForm({ ...job, link: "",deadline: "",});
                             setShowModal(true);
                           }}
                         >
@@ -294,6 +298,12 @@ const fetchJobDetails = async () => {
                             <span>Location</span>
                             <span className="text-black text-base font-semibold">{job.location}</span>
                           </div>
+                        </div>
+                        <div className="flex flex-col text-sm text-gray-400">
+                          <span>Deadline</span>
+                          <span className="text-black text-base font-semibold">
+                            {job.deadline || "—"}
+                          </span>
                         </div>
 
                         {/* Dropdown is EXCLUDED from modal click */}
@@ -311,7 +321,6 @@ const fetchJobDetails = async () => {
                           </select>
                         </div>
                       </div>
-
                     ))
                   )}
                 </div>
@@ -397,6 +406,14 @@ const fetchJobDetails = async () => {
                 onChange={(e) => setForm({ ...form, location: e.target.value })}
                 className="border p-2 w-full rounded"
               />
+              <input
+                type="text"
+                placeholder="Deadline (e.g., May 3, 2025)"
+                value={form.deadline}
+                onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+                className="border p-2 w-full rounded"
+              />
+
               <div className="flex justify-end gap-2 mt-6">
                 {editTarget ? (
                   <>
