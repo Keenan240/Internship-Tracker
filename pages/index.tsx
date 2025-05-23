@@ -13,7 +13,7 @@ type JobPosting = {
 };
 
 
-const statusLabels = ["Applied", "Rejected", "Interview", "Offer"];
+const statusLabels = ["Saved","Applied", "Rejected", "Interview", "Offer"];
 
 export default function Home() {
   const session = useSession()
@@ -39,7 +39,7 @@ export default function Home() {
   fetchJobs();
 }, [session, supabase]);
 
-  const [expanded, setExpanded] = useState<string | null>("Applied");
+  const [expanded, setExpanded] = useState<string | null>("Saved");
   const [showModal, setShowModal] = useState(false);
   const [postings, setPostings] = useState<JobPosting[]>([]);
   const [form, setForm] = useState({ title: "", company: "", location: "", link: "" });
@@ -69,7 +69,7 @@ const handleAddJob = async () => {
           title: form.title,
           company: form.company,
           location: form.location,
-          status: "Applied",
+          status: "Saved",
           user_id: session?.user.id,
         },
       ])
@@ -215,7 +215,7 @@ const fetchJobDetails = async () => {
             Sign In with Google
           </button>
         ) : (
-          <div className="mb-4 flex justify-between w-full max-w-4xl">
+          <div className="mb-4 flex justify-between cursor-pointer w-full max-w-4xl">
             <span>Signed in as {session.user.email}</span>
             <button
               className="px-4 py-2 border rounded"
@@ -261,6 +261,7 @@ const fetchJobDetails = async () => {
                 <div className="px-6 py-4 bg-gray-50 space-y-4">
                   {jobs.length === 0 ? (
                     <div className="text-gray-500 text-sm italic">
+                      {label === "Saved" && "Bro where are your applications???"}
                       {label === "Applied" && "Bro where are your applications???"}
                       {label === "Rejected" && "I'll buy you a bagel if you get >400"}
                       {label === "Interview" && "don't give up!!"}
