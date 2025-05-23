@@ -227,7 +227,6 @@ const fetchJobDetails = async () => {
         )}
       </div>
 
-
       <h1 className="text-6xl font-bold mb-6 text-center">Internship Tracker</h1>
       <Motivate />
 
@@ -271,37 +270,47 @@ const fetchJobDetails = async () => {
                     jobs.map((job) => (
                       <div
                         key={job.id}
-                        className="flex items-center justify-between gap-6 border rounded-lg p-4 bg-white shadow-sm cursor-pointer hover:bg-gray-100"
-                        onClick={() => {
-                          setEditTarget(job);
-                          setForm({ ...job, link: "" });
-                          setShowModal(true);
-                        }}
+                        className="flex justify-between items-center border rounded-lg p-4 bg-white shadow-sm hover:bg-gray-100"
                       >
-                        <div className="flex flex-col text-sm text-gray-400">
-                          <span>Job Title</span>
-                          <span className="text-black text-base font-semibold">{job.title}</span>
+                        {/* Clickable LEFT side only */}
+                        <div
+                          className="flex gap-6 pointer-events-auto w-full"
+                          onClick={() => {
+                            setEditTarget(job);
+                            setForm({ ...job, link: "" });
+                            setShowModal(true);
+                          }}
+                        >
+                          <div className="flex flex-col text-sm text-gray-400">
+                            <span>Job Title</span>
+                            <span className="text-black text-base font-semibold">{job.title}</span>
+                          </div>
+                          <div className="flex flex-col text-sm text-gray-400">
+                            <span>Company</span>
+                            <span className="text-black text-base font-semibold">{job.company}</span>
+                          </div>
+                          <div className="flex flex-col text-sm text-gray-400">
+                            <span>Location</span>
+                            <span className="text-black text-base font-semibold">{job.location}</span>
+                          </div>
                         </div>
-                        <div className="flex flex-col text-sm text-gray-400">
-                          <span>Company</span>
-                          <span className="text-black text-base font-semibold">{job.company}</span>
-                        </div>
-                        <div className="flex flex-col text-sm text-gray-400">
-                          <span>Location</span>
-                          <span className="text-black text-base font-semibold">{job.location}</span>
-                        </div>
-                        <div>
+
+                        {/* Dropdown is EXCLUDED from modal click */}
+                        <div className="pointer-events-auto" onClick={(e) => e.stopPropagation()}>
                           <select
                             value={job.status}
                             onChange={(e) => updateStatus(job.id, e.target.value)}
                             className="border px-3 py-2 rounded text-sm"
                           >
                             {statusLabels.map((status) => (
-                              <option key={status} value={status}>{status}</option>
+                              <option key={status} value={status}>
+                                {status}
+                              </option>
                             ))}
                           </select>
                         </div>
                       </div>
+
                     ))
                   )}
                 </div>
