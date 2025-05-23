@@ -299,7 +299,7 @@ const fetchJobDetails = async () => {
                             <span className="text-black text-base font-semibold">{job.location}</span>
                           </div>
                         </div>
-                        <div className="flex flex-col text-sm text-gray-400">
+                        <div className="flex flex-col text-sm text-gray-400 mr-4">
                           <span>Deadline</span>
                           <span className="text-black text-base font-semibold">
                             {job.deadline || "—"}
