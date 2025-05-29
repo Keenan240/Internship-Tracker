@@ -1,16 +1,9 @@
 @import "tailwindcss";
 
-
+/* Theme variables */
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,11 +13,13 @@
   }
 }
 
+/* Font Faces */
 @font-face {
   font-family: 'SF Pro Display';
   src: url('/fonts/SFProDisplay-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -32,6 +27,7 @@
   src: url('/fonts/SFProDisplay-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -39,11 +35,12 @@
   src: url('/fonts/SFProDisplay-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
+  font-display: swap;
 }
 
+/* Body Styling */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'SF Pro Display';;
-
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
 }
