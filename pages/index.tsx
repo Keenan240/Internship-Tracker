@@ -206,7 +206,6 @@ export default function Home() {
 
   return (
     <div className="text-white min-h-screen flex flex-col items-center p-6 bg-gradient-to-b from-[#282828] to-[#343434]">
-      <SignInButton />
 
       <div className="flex justify-between items-center justify-center w-full max-w-4xl mb-8 mt-8">
         {!session ? (
