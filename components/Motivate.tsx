@@ -31,7 +31,7 @@ export default function Motivate() {
 
   return (
     <div
-      className={`text-center text-lg font-medium text-gray-600 mb-10 transition-opacity duration-500 ${
+      className={`text-center text-lg font-medium text-white-600 mb-10 transition-opacity duration-500 ${
         fade ? 'opacity-100' : 'opacity-0'
       }`}
     >

@@ -13,9 +13,12 @@
     "@supabase/auth-helpers-react": "^0.5.0",
     "@supabase/supabase-js": "^2.49.8",
     "cheerio": "^1.0.0",
+    "framer-motion": "^12.23.12",
     "next": "15.3.2",
+    "plotly.js": "^3.0.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-plotly.js": "^2.6.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -1,4 +1,6 @@
 import Motivate from "@/components/Motivate";
+import SignInButton from '@/components/SignInButton';
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 
@@ -203,11 +205,13 @@ export default function Home() {
   };
 
   return (
-    <div className="text-black min-h-screen flex flex-col items-center p-6 bg-white">
+    <div className="text-white min-h-screen flex flex-col items-center p-6 bg-gradient-to-b from-[#282828] to-[#343434]">
+      <SignInButton />
+
       <div className="flex justify-between items-center justify-center w-full max-w-4xl mb-8 mt-8">
         {!session ? (
           <button
-            className="mb-4 px-4 py-2 bg-black text-white rounded cursor-pointer hover:bg-gray-600 transition-colors"
+            className="mb-4 px-6 py-3 bg-black text-white rounded-[12px] cursor-pointer hover:bg-gray-600 transition-colors"
             onClick={() => supabase.auth.signInWithOAuth({ provider: 'google' })}
           >
             Sign In with Google
@@ -216,7 +220,7 @@ export default function Home() {
           <div className="mb-4 flex justify-between cursor-pointer w-full max-w-4xl">
             <span>Signed in as {session.user.email}</span>
             <button
-              className="px-4 py-2 border rounded"
+              className="px-4 py-2 border rounded-xl cursor-pointer"
               onClick={() => supabase.auth.signOut()}
             >
               Sign Out
@@ -229,8 +233,9 @@ export default function Home() {
 
       <Motivate />
 
-      <div className="w-full max-w-4xl border rounded-lg">
-        <div className="flex justify-between items-center border-b px-6 py-4">
+      <div className="w-full max-w-4xl rounded-2xl shadow-lg bg-white/10 backdrop-blur-md border border-white/20">
+        {/* Header */}
+        <div className="flex justify-between items-center px-6 py-4">
           <span className="text-2xl font-bold">Applications</span>
           <button
             onClick={() => {
@@ -238,42 +243,52 @@ export default function Home() {
               setEditTarget(null);
               setShowModal(true);
             }}
-            className="bg-black text-2xl text-white px-8 py-1 rounded hover:bg-gray-600 transition-colors"
+            className="text-2xl text-white px-6 py-1 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 cursor-pointer shadow-lg hover:bg-white/20 transition"
           >
             +
           </button>
         </div>
 
+        {/* Status Sections */}
         {statusLabels.map((label) => {
           const jobs = postings.filter((p) => p.status === label);
           return (
             <div key={label}>
               <button
                 onClick={() => toggleExpand(label)}
-                className="flex justify-between items-center w-full px-6 py-4 border-b hover:bg-gray-100 transition-colors"
+                className="flex justify-between items-center w-full px-6 py-4 border-t border-white/10 hover:bg-white/5 transition cursor-pointer"
               >
                 <span className="text-xl">{label}</span>
-                <span className="text-sm border px-3 py-1 rounded bg-white">{jobs.length}</span>
+                <span className="text-white text-sm border border-white/20 bg-white/10 px-3 py-1 rounded">
+                  {jobs.length}
+                </span>
               </button>
 
-              {expanded === label && (
-                <div className="px-6 py-4 bg-gray-50 space-y-4">
-                  {jobs.length === 0 ? (
-                    <div className="text-gray-500 text-sm italic">
-                      {label === "Saved" && "so dead in here..."}
-                      {label === "Applied" && "Bro where are your applications???"}
-                      {label === "Rejected" && "I'll buy you a bagel if you get >400"}
-                      {label === "Interview" && "don't give up!!"}
-                      {label === "Offer" && "don't give up!!"}
-                    </div>
-                  ) : (
-                    jobs.map((job) => (
-                      <div
-                        key={job.id}
-                        className="flex justify-between items-center border rounded-lg p-4 bg-white shadow-sm hover:bg-gray-100"
-                      >
-                        <div
-                          className="flex gap-6 pointer-events-auto w-full"
+              <AnimatePresence initial={false}>
+                {expanded === label && (
+                  <motion.div
+                    key={label}
+                    layout
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="px-6 py-4 space-y-4"
+                  >
+                    {jobs.length === 0 ? (
+                      <div className="text-white/70 text-sm italic">
+                        {label === "Saved" && "so dead in here..."}
+                        {label === "Applied" && "Bro where are your applications???"}
+                        {label === "Rejected" && "I'll buy you a bagel if you get >400"}
+                        {label === "Interview" && "don't give up!!"}
+                        {label === "Offer" && "keep grinding, you got this!"}
+                      </div>
+                    ) : (
+                      jobs.map((job) => (
+                        <motion.div
+                          key={job.id}
+                          layout
+                          whileHover={{ scale: 1.02 }}
                           onClick={() => {
                             setEditTarget(job);
                             setForm({
@@ -285,91 +300,88 @@ export default function Home() {
                             });
                             setShowModal(true);
                           }}
+                          className="flex items-center justify-between h-16 rounded-lg bg-white/10 border border-white/20 shadow-md backdrop-blur-md px-4 cursor-pointer hover:bg-white/20 transition"
                         >
-                          <div className="flex flex-col text-sm text-gray-400">
-                            <span>Job Title</span>
+                          {/* Job Info */}
+                          <div className="flex-1 min-w-[150px] truncate">
                             {job.link ? (
                               <a
                                 href={job.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-blue-600 hover:underline text-base font-semibold"
+                                className="text-lg font-medium text-white truncate hover:underline"
+                                onClick={(e) => e.stopPropagation()}
                               >
                                 {job.title}
                               </a>
                             ) : (
-                              <span className="text-black text-base font-semibold">{job.title}</span>
+                              <span className="text-lg font-medium text-white truncate">
+                                {job.title}
+                              </span>
                             )}
                           </div>
-                          <div className="flex flex-col text-sm text-gray-400">
-                            <span>Company</span>
-                            <span className="text-black text-base font-semibold">{job.company}</span>
+                          <div className="flex-1 min-w-[150px] text-lg font-medium text-white truncate">
+                            {job.company}
                           </div>
-                          <div className="flex flex-col text-sm text-gray-400">
-                            <span>Location</span>
-                            <span className="text-black text-base font-semibold">{job.location}</span>
+                          <div className="flex-1 min-w-[120px] text-lg font-medium text-white truncate">
+                            {job.location}
                           </div>
-                        </div>
-                        <div className="flex flex-col text-sm text-gray-400 mr-4">
-                          <span>Deadline</span>
-                          <span className="text-black text-base font-semibold">
+                          <div className="flex-1 min-w-[120px] text-lg font-medium text-white truncate">
                             {job.deadline || "—"}
-                          </span>
-                        </div>
+                          </div>
 
-                        <div className="pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-                          <select
-                            value={job.status}
-                            onChange={(e) => updateStatus(job.id, e.target.value)}
-                            className="border px-3 py-2 rounded text-sm"
-                          >
-                            {statusLabels.map((status) => (
-                              <option key={status} value={status}>
-                                {status}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
+                          {/* Status Dropdown */}
+                          <div className="w-24 h-8 rounded-md flex items-center justify-center bg-white/10 border border-white/20 text-white text-sm font-medium shadow-md backdrop-blur-sm hover:bg-white/20 z-50">
+                            <select
+                              value={job.status}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) => updateStatus(job.id, e.target.value)}
+                              className="bg-transparent text-white text-sm font-medium w-full h-full text-center cursor-pointer outline-none"
+                            >
+                              {statusLabels.map((status) => (
+                                <option key={status} value={status} className="text-black">
+                                  {status}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </motion.div>
+                      ))
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           );
         })}
       </div>
 
+
       {showModal && (
-        <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-xl">
-            <div className="flex justify-between items-center mb-4">
+        <div className="fixed inset-0 bg-[#282828] bg-opacity-50 flex items-center justify-center z-50">
+          <div className="p-6 rounded-lg shadow-lg w-[90%] max-w-xl bg-white/10 backdrop-blur-md border border-white/20">
+              <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">{editTarget ? "Edit Job Posting" : "Add a Job"}</h2>
               <button
                 onClick={resetForm}
-                className="text-gray-500 hover:text-gray-800 text-lg cursor-pointer"
+                className="text-white hover:text-gray-800 text-lg cursor-pointer"
               >✕</button>
             </div>
 
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-
                 if (!form.title.trim() || !form.company.trim() || !form.location.trim()) {
                   alert("All fields are required!");
                   return;
                 }
-
-                if (editTarget) {
-                  handleUpdateJob();
-                } else {
-                  handleAddJob();
-                }
+                if (editTarget) handleUpdateJob();
+                else handleAddJob();
               }}
               className="grid gap-4"
             >
               <div className="grid gap-2">
-                <label className="text-sm text-gray-600">Job Posting Link (optional)</label>
+                <label className="text-sm text-white">Job Posting Link (optional)</label>
                 <input
                   type="text"
                   placeholder="Paste job posting link"
@@ -381,7 +393,7 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={fetchJobDetails}
-                    className="text-sm bg-black text-white border border-black rounded px-4 py-2 w-48 hover:bg-opacity-60 transition-opacity duration-200 mx-auto text-center cursor-pointer"
+                    className="text-sm bg-black text-white border border-black rounded-xl px-4 py-2 w-48 hover:bg-opacity-60 transition-opacity duration-200 mx-auto text-center cursor-pointer"
                   >
                     Fetch Job Info
                   </button>
@@ -438,13 +450,13 @@ export default function Home() {
                     <button
                       type="button"
                       onClick={resetForm}
-                      className="text-sm px-4 py-2 rounded border cursor-pointer text-gray-500 hover:text-gray-800 transition-colors"
+                      className="text-sm px-4 py-2 rounded-xl border cursor-pointer text-white hover:text-gray-800 transition-colors"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="bg-black text-white text-sm px-4 py-2 rounded cursor-pointer hover:bg-opacity-60 transition-opacity"
+                      className="bg-black text-white text-sm px-4 py-2 rounded-xl cursor-pointer hover:bg-opacity-60 transition-opacity"
                     >
                       Add
                     </button>
