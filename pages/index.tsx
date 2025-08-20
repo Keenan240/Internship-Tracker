@@ -1,5 +1,4 @@
 import Motivate from "@/components/Motivate";
-import SignInButton from '@/components/SignInButton';
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
@@ -209,6 +208,8 @@ export default function Home() {
       
       {/* 
       Admin Access Button:
+
+      add in import SignInButton from '@/components/SignInButton'; at the top
 
       <SignInButton />
 
